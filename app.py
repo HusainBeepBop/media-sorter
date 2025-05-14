@@ -1,22 +1,21 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, send_from_directory, jsonify, request
 import os
 import shutil
 
 app = Flask(__name__)
-MEDIA_FOLDER = 'media'
-BIN_FOLDER = os.path.expanduser('~/Downloads/bin')
-ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.mp4', '.mov', '.avi'}
 
-if not os.path.exists(BIN_FOLDER):
-    os.makedirs(BIN_FOLDER)
+# Set custom folders (update these two lines as needed)
+media_folder = os.path.expanduser("~/Desktop/media")   
+bin_folder = os.path.expanduser("~/Downloads/bin")     
 
-def list_media_files():
-    files = []
-    for file in sorted(os.listdir(MEDIA_FOLDER)):
-        ext = os.path.splitext(file)[1].lower()
-        if ext in ALLOWED_EXTENSIONS:
-            files.append(file)
-    return files
+
+os.makedirs(bin_folder, exist_ok=True)
+
+# Allowed file extensions
+allowed_extensions = {
+    "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg",
+    "mp4", "mov", "avi", "mkv", "flv", "webm"
+}
 
 @app.route('/')
 def index():
@@ -24,26 +23,35 @@ def index():
 
 @app.route('/media-list')
 def media_list():
-    return jsonify(list_media_files())
+    files = []
+    for file in os.listdir(media_folder):
+        if file.split('.')[-1].lower() in allowed_extensions:
+            files.append(file)
+    return jsonify(files)
+
+@app.route('/media/<path:filename>')
+def media_file(filename):
+    return send_from_directory(media_folder, filename)
 
 @app.route('/delete', methods=['POST'])
 def delete_file():
-    filename = request.json.get('filename')
-    source_path = os.path.join(MEDIA_FOLDER, filename)
-    target_path = os.path.join(BIN_FOLDER, filename)
-    if os.path.exists(source_path):
-        shutil.move(source_path, target_path)
-        return jsonify({'success': True})
-    return jsonify({'success': False})
+    data = request.get_json()
+    filename = data['filename']
+    src = os.path.join(media_folder, filename)
+    dst = os.path.join(bin_folder, filename)
+    if os.path.exists(src):
+        shutil.move(src, dst)
+    return '', 204
 
 @app.route('/mark', methods=['POST'])
 def mark_file():
-    filename = request.json.get('filename')
-    path = os.path.join(MEDIA_FOLDER, filename)
-    if os.path.exists(path):
-        os.remove(path)  # You can customize this behavior
-        return jsonify({'success': True})
-    return jsonify({'success': False})
+    data = request.get_json()
+    filename = data['filename']
+    filepath = os.path.join(media_folder, filename)
+    marked_file = os.path.join(media_folder, f"__KEEP__{filename}")
+    if os.path.exists(filepath):
+        os.rename(filepath, marked_file)
+    return '', 204
 
 if __name__ == '__main__':
     app.run(debug=True)
