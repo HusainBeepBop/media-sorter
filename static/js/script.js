@@ -3,7 +3,7 @@ let currentFile = "";
 function showPopup(message, isError = false) {
   const popup = document.getElementById("popup");
   popup.textContent = message;
-  popup.style.backgroundColor = isError ? "#b00020" : "#1f1f1f";  // Red for error, default dark for normal
+  popup.style.backgroundColor = isError ? "#b00020" : "#1f1f1f"; 
   popup.classList.add("show");
   setTimeout(() => {
     popup.classList.remove("show");
