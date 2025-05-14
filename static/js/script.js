@@ -9,7 +9,7 @@ function loadMedia() {
       files.forEach(file => {
         const ext = file.split('.').pop().toLowerCase();
         let el;
-        if (['mp4', 'mov', 'avi'].includes(ext)) {
+        if (['mp4', 'mov', 'avi', 'mkv', 'flv', 'webm'].includes(ext)) {
           el = document.createElement('video');
           el.src = `/media/${file}`;
           el.muted = true;
@@ -20,6 +20,7 @@ function loadMedia() {
           el.src = `/media/${file}`;
         }
         el.onclick = () => showPreview(file, el.tagName);
+        el.dataset.filename = file;
         reel.appendChild(el);
       });
     });
@@ -42,10 +43,9 @@ function showPreview(file, type) {
     preview.appendChild(img);
   }
 
-  // Scroll to selected
   const allThumbs = document.getElementById('thumbnailReel').children;
   for (let thumb of allThumbs) {
-    if (thumb.src.includes(file)) {
+    if (thumb.dataset.filename === file) {
       thumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
       break;
     }
@@ -53,28 +53,36 @@ function showPreview(file, type) {
 }
 
 function deleteFile() {
-  if (!currentFile) return;
+  if (!currentFile) return alert("No file selected.");
   fetch('/delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
-  }).then(() => {
-    currentFile = '';
-    document.getElementById('previewArea').innerHTML = 'Select a file';
-    loadMedia();
+  }).then(res => {
+    if (res.status === 204) {
+      currentFile = '';
+      document.getElementById('previewArea').innerHTML = 'Select a file';
+      loadMedia();
+    } else {
+      alert("Failed to delete file.");
+    }
   });
 }
 
 function markFile() {
-  if (!currentFile) return;
+  if (!currentFile) return alert("No file selected.");
   fetch('/mark', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
-  }).then(() => {
-    currentFile = '';
-    document.getElementById('previewArea').innerHTML = 'Select a file';
-    loadMedia();
+  }).then(res => {
+    if (res.status === 204) {
+      currentFile = '';
+      document.getElementById('previewArea').innerHTML = 'Select a file';
+      loadMedia();
+    } else {
+      alert("Failed to mark file.");
+    }
   });
 }
 
