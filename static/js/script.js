@@ -1,5 +1,14 @@
 let currentFile = "";
 
+function showPopup(message) {
+  const popup = document.getElementById("popup");
+  popup.textContent = message;
+  popup.classList.add("show");
+  setTimeout(() => {
+    popup.classList.remove("show");
+  }, 2000);
+}
+
 function loadMedia() {
   fetch('/media-list')
     .then(res => res.json())
