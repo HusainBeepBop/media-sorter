@@ -70,7 +70,7 @@ Then open http://127.0.0.1:5000 in your browser.
         - Date of the file
         - Type of the file
         - Dimensions
-
+- Duplicate removes
 # 📂 Folder Structure
 ```bash
     media-sorter/
