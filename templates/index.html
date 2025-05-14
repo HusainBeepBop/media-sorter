@@ -2,17 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Media Declutter App</title>
+  <title>Media Sorter</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+  <header>
+    <div class="left">
+      Made by: <a href="https://github.com/HusainBeepBop" target="_blank">Husain</a>
+    </div>
+    <div class="right">
+      Media Sorter
+    </div>
+  </header>
   <div class="container">
     <div class="sidebar" id="thumbnailReel"></div>
     <div class="main">
       <div class="preview" id="previewArea">Select a file</div>
       <div class="actions">
-        <button onclick="deleteFile()">🗑️ Delete</button>
-        <button onclick="markFile()">✅ Keep</button>
+        <button class="delete" onclick="deleteFile()">🗑️ Delete</button>
+        <button class="keep" onclick="markFile()">✅ Keep</button>
       </div>
     </div>
   </div>
