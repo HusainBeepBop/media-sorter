@@ -50,10 +50,26 @@ python app.py
 ```
 Then open http://127.0.0.1:5000 in your browser.
 
-✅ Keyboard Shortcuts (coming soon)
-D = Delete file
-K = Keep file
-Up/Down Arrow Keys = Scrolling through the File
+### 5. Planned Features:
+
+- Keyboard Shortcuts (coming soon)
+    - D = Delete file
+    - K = Keep file
+    - Up/Down Arrow Keys = Scrolling through the File
+- Undo button
+    - Undo your last action (Keep/Delete)
+- Choose Media Folder via UI
+- Filter/Sorting:
+    - Decending (Size)
+    - Decending (Date)(Newer First)
+    - File Type (Photo/Video)
+- File Information Tooltip 
+    - On Hover Shows:
+        - Name of the file
+        - Size of the file
+        - Date of the file
+        - Type of the file
+        - Dimensions
 
 # 📂 Folder Structure
 ```bash
@@ -69,7 +85,7 @@ Up/Down Arrow Keys = Scrolling through the File
     ├── bin/
 ```
 # 👨‍💻 Author
-Made by Husain – feel free to ⭐ star or fork the repo!
+Made by Husain and AI – feel free to ⭐ star or fork the repo!
 
 📃 License
 This project is licensed under the MIT License.
