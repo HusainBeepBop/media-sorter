@@ -118,9 +118,9 @@ header .right {
 
 .popup {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 20px;               
+  left: 50%;               
+  transform: translateX(-50%);  
   background-color: #1f1f1f;
   color: #fff;
   padding: 12px 20px;
