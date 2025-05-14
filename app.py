@@ -5,7 +5,7 @@ import shutil
 app = Flask(__name__)
 
 # Set custom folders (update these two lines as needed)
-media_folder = os.path.expanduser("~/Desktop/media")   
+media_folder = os.path.expanduser("~/Downloads/test")   
 bin_folder = os.path.expanduser("~/Downloads/bin")     
 
 
