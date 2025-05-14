@@ -1,8 +1,9 @@
 let currentFile = "";
 
-function showPopup(message) {
+function showPopup(message, isError = false) {
   const popup = document.getElementById("popup");
   popup.textContent = message;
+  popup.style.backgroundColor = isError ? "#b00020" : "#1f1f1f";  // Red for error, default dark for normal
   popup.classList.add("show");
   setTimeout(() => {
     popup.classList.remove("show");
@@ -62,37 +63,39 @@ function showPreview(file, type) {
 }
 
 function deleteFile() {
-  if (!currentFile) return alert("No file selected.");
+  if (!currentFile) return showPopup("⚠️ No file selected.", true);
   fetch('/delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
   }).then(res => {
     if (res.status === 204) {
+      showPopup("🗑️ File moved to bin");
       currentFile = '';
       document.getElementById('previewArea').innerHTML = 'Select a file';
       loadMedia();
     } else {
-      alert("Failed to delete file.");
+      showPopup("❌ Failed to delete file.", true);
     }
-  });
+  }).catch(() => showPopup("❌ Error deleting file.", true));
 }
 
 function markFile() {
-  if (!currentFile) return alert("No file selected.");
+  if (!currentFile) return showPopup("⚠️ No file selected.", true);
   fetch('/mark', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
   }).then(res => {
     if (res.status === 204) {
+      showPopup("✅ File kept");
       currentFile = '';
       document.getElementById('previewArea').innerHTML = 'Select a file';
       loadMedia();
     } else {
-      alert("Failed to mark file.");
+      showPopup("❌ Failed to keep file.", true);
     }
-  });
+  }).catch(() => showPopup("❌ Error marking file.", true));
 }
 
 window.onload = loadMedia;
