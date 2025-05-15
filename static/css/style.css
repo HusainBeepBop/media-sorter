@@ -137,3 +137,19 @@ header .right {
 .popup.show {
   opacity: 1;
 }
+
+#toolkit-box {
+  position: fixed;
+  top: 80px;
+  right: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 1000;
+  min-width: 180px;
+  max-width: 280px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
