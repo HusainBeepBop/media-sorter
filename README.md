@@ -71,6 +71,8 @@ Then open http://127.0.0.1:5000 in your browser.
         - Type of the file
         - Dimensions
 - Duplicate removes
+- Select multiple items
+- Change name of file
 # 📂 Folder Structure
 ```bash
     media-sorter/
