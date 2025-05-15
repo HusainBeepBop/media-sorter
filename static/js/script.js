@@ -5,9 +5,7 @@ function showPopup(message, isError = false) {
   popup.textContent = message;
   popup.style.backgroundColor = isError ? "#b00020" : "#1f1f1f"; 
   popup.classList.add("show");
-  setTimeout(() => {
-    popup.classList.remove("show");
-  }, 2000);
+  setTimeout(() => popup.classList.remove("show"), 2000);
 }
 
 function loadMedia() {
@@ -33,12 +31,12 @@ function loadMedia() {
         el.dataset.filename = file;
         reel.appendChild(el);
       });
-      resetToolkit();
     });
 }
 
 function showPreview(file, type) {
   currentFile = file;
+
   const preview = document.getElementById('previewArea');
   preview.innerHTML = '';
 
@@ -62,15 +60,10 @@ function showPreview(file, type) {
     dimensions: 'Loading...'
   });
 
-  fetch(`/metadata/${file}`)
-    .then(res => res.json())
-    .then(data => {
-      updateToolkitInfo(data);
-    })
-    .catch(() => {
-      showPopup("⚠️ Failed to fetch metadata", true);
-    });
+  scrollToSelectedThumbnail(file);
+}
 
+function scrollToSelectedThumbnail(file) {
   const allThumbs = document.getElementById('thumbnailReel').children;
   for (let thumb of allThumbs) {
     if (thumb.dataset.filename === file) {
@@ -86,17 +79,19 @@ function deleteFile() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
-  }).then(res => {
-    if (res.status === 204) {
-      showPopup("🗑️ File moved to bin");
-      currentFile = '';
-      document.getElementById('previewArea').innerHTML = 'Select a file';
-      resetToolkit();
-      loadMedia();
-    } else {
-      showPopup("❌ Failed to delete file.", true);
-    }
-  }).catch(() => showPopup("❌ Error deleting file.", true));
+  })
+    .then(res => {
+      if (res.status === 204) {
+        showPopup("🗑️ File moved to bin");
+        currentFile = '';
+        document.getElementById('previewArea').innerHTML = 'Select a file';
+        updateToolkitInfo({});  // clear
+        loadMedia();
+      } else {
+        showPopup("❌ Failed to delete file.", true);
+      }
+    })
+    .catch(() => showPopup("❌ Error deleting file.", true));
 }
 
 function markFile() {
@@ -105,35 +100,34 @@ function markFile() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: currentFile })
-  }).then(res => {
-    if (res.status === 204) {
-      showPopup("✅ File kept");
-      currentFile = '';
-      document.getElementById('previewArea').innerHTML = 'Select a file';
-      resetToolkit();
-      loadMedia();
-    } else {
-      showPopup("❌ Failed to keep file.", true);
-    }
-  }).catch(() => showPopup("❌ Error marking file.", true));
+  })
+    .then(res => {
+      if (res.status === 204) {
+        showPopup("✅ File kept");
+        currentFile = '';
+        document.getElementById('previewArea').innerHTML = 'Select a file';
+        updateToolkitInfo({});
+        loadMedia();
+      } else {
+        showPopup("❌ Failed to keep file.", true);
+      }
+    })
+    .catch(() => showPopup("❌ Error keeping file.", true));
 }
 
-function updateToolkitInfo({ filename, size = '—', date = '—', type = '—', dimensions = '—' }) {
-  document.getElementById('tk-filename').textContent = filename || '—';
-  document.getElementById('tk-size').textContent = size;
-  document.getElementById('tk-date').textContent = date;
-  document.getElementById('tk-type').textContent = type;
-  document.getElementById('tk-dimensions').textContent = dimensions;
+function updateToolkitInfo(filename, size, date, type, dimensions) {
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+
+    setText('toolkit-filename', filename);
+    setText('toolkit-size', size);
+    setText('toolkit-date', date);
+    setText('toolkit-type', type);
+    setText('toolkit-dimensions', dimensions);
 }
 
-function resetToolkit() {
-  updateToolkitInfo({
-    filename: '—',
-    size: '—',
-    date: '—',
-    type: '—',
-    dimensions: '—'
-  });
-}
+
 
 window.onload = loadMedia;
