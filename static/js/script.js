@@ -1,5 +1,4 @@
 let currentFile = "";
-let undoAvailable = false;
 
 // === Utility Functions ===
 
@@ -21,14 +20,6 @@ function updateToolkitInfo(filename, size, date, type, dimensions) {
 
 function resetToolkit() {
   updateToolkitInfo('—', '—', '—', '—', '—');
-}
-
-function setUndoButton(enabled) {
-  undoAvailable = enabled;
-  const btn = document.getElementById("undoButton");
-  if (btn) {
-    btn.disabled = !enabled;
-  }
 }
 
 // === Loading and Display ===
@@ -57,7 +48,8 @@ function loadMedia() {
         reel.appendChild(el);
       });
       resetToolkit();
-      setUndoButton(false); // Disable undo on media reload
+      document.getElementById('previewArea').innerHTML = 'Select a file';
+      currentFile = "";
     })
     .catch(err => console.error("Failed to load media list:", err));
 }
@@ -111,7 +103,7 @@ function scrollToSelectedThumbnail(filename) {
   }
 }
 
-// === Actions: Delete / Keep ===
+// === Actions: Delete / Keep / Undo ===
 
 function deleteFile() {
   if (!currentFile) return showPopup("⚠️ No file selected.", true);
@@ -126,8 +118,7 @@ function deleteFile() {
         currentFile = "";
         document.getElementById('previewArea').innerHTML = 'Select a file';
         resetToolkit();
-        loadMedia();
-        setUndoButton(true);  // Enable Undo after delete
+        loadMedia();  // Refresh list after delete
       } else {
         showPopup("❌ Delete failed.", true);
       }
@@ -148,8 +139,7 @@ function markFile() {
         currentFile = "";
         document.getElementById('previewArea').innerHTML = 'Select a file';
         resetToolkit();
-        loadMedia();
-        setUndoButton(true);  // Enable Undo after mark
+        loadMedia();  // Refresh list after keep
       } else {
         showPopup("❌ Keep failed.", true);
       }
@@ -157,21 +147,20 @@ function markFile() {
     .catch(() => showPopup("❌ Error keeping file.", true));
 }
 
-// === Undo Action ===
-
-function undoAction() {
-  if (!undoAvailable) return;
-  fetch('/undo', { method: 'POST' })
+function undoLastAction() {
+  fetch('/undo', {
+    method: 'POST'
+  })
     .then(res => {
       if (res.status === 204) {
         showPopup("↩️ Undo successful");
-        loadMedia();
-        setUndoButton(false);  // Disable Undo after undo
+        currentFile = "";
+        document.getElementById('previewArea').innerHTML = 'Select a file';
+        resetToolkit();
+        loadMedia();  // Refresh list after undo
       } else {
         res.json().then(data => {
-          showPopup("❌ Undo failed: " + (data.error || ''), true);
-        }).catch(() => {
-          showPopup("❌ Undo failed", true);
+          showPopup(`❌ Undo failed: ${data.error}`, true);
         });
       }
     })

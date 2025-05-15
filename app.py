@@ -5,11 +5,11 @@ from PIL import Image
 import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your_super_secret_key_here'  
+app.secret_key = 'your_super_secret_key_here'  # Replace with a secure random key for production
 
 # Set custom folders (update these two lines as needed)
-media_folder = os.path.expanduser("~/Downloads/test")   
-bin_folder = os.path.expanduser("~/Downloads/bin")     
+media_folder = os.path.expanduser("~/Downloads/test")
+bin_folder = os.path.expanduser("~/Downloads/bin")
 
 app.config['MEDIA_FOLDER'] = media_folder
 
@@ -91,7 +91,6 @@ def undo_last_action():
     filename = last_action.get('filename')
 
     if action_type == 'delete':
-        
         src = os.path.join(bin_folder, filename)
         dst = os.path.join(media_folder, filename)
         if os.path.exists(src):
@@ -102,7 +101,6 @@ def undo_last_action():
             return jsonify({'error': 'File to restore not found in bin'}), 404
 
     elif action_type == 'mark':
-        
         marked_file = os.path.join(media_folder, f"__KEEP__{filename}")
         original_file = os.path.join(media_folder, filename)
         if os.path.exists(marked_file):
