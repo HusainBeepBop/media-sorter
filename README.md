@@ -66,6 +66,18 @@ Then open http://127.0.0.1:5000 in your browser.
 - Duplicate removes
 - Select multiple items
 - Change name of file
+
+# Secret Key
+
+This app uses a default secret key for session support.
+
+You can override it by setting the environment variable `SECRET_KEY` before running:
+
+    export SECRET_KEY="your_secret_key_here"
+    python app.py
+
+For most local use cases, the default key works fine.
+
 # 📂 Folder Structure
 ```bash
     media-sorter/
