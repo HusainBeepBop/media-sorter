@@ -53,6 +53,14 @@ function showPreview(file, type) {
     preview.appendChild(img);
   }
 
+  updateToolkitInfo({
+    filename: file,
+    size: 'Loading...',
+    date: 'Loading...',
+    type: type === 'VIDEO' ? 'Video' : 'Image',
+    dimensions: 'Loading...'
+  });
+
   const allThumbs = document.getElementById('thumbnailReel').children;
   for (let thumb of allThumbs) {
     if (thumb.dataset.filename === file) {
@@ -79,6 +87,15 @@ function deleteFile() {
     }
   }).catch(() => showPopup("❌ Error deleting file.", true));
 }
+
+function updateToolkitInfo({ filename, size = '—', date = '—', type = '—', dimensions = '—' }) {
+  document.getElementById('tk-filename').textContent = filename || '—';
+  document.getElementById('tk-size').textContent = size;
+  document.getElementById('tk-date').textContent = date;
+  document.getElementById('tk-type').textContent = type;
+  document.getElementById('tk-dimensions').textContent = dimensions;
+}
+
 
 function markFile() {
   if (!currentFile) return showPopup("⚠️ No file selected.", true);
