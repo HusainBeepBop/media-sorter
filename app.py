@@ -1,6 +1,8 @@
 from flask import Flask, render_template, send_from_directory, jsonify, request
 import os
 import shutil
+from PIL import Image
+import datetime
 
 app = Flask(__name__)
 
@@ -8,6 +10,7 @@ app = Flask(__name__)
 media_folder = os.path.expanduser("~/Downloads/test")   
 bin_folder = os.path.expanduser("~/Downloads/bin")     
 
+app.config['MEDIA_FOLDER'] = media_folder
 
 os.makedirs(bin_folder, exist_ok=True)
 
@@ -52,6 +55,38 @@ def mark_file():
     if os.path.exists(filepath):
         os.rename(filepath, marked_file)
     return '', 204
+
+@app.route('/metadata/<filename>')
+def get_metadata(filename):
+    filepath = os.path.join(app.config['MEDIA_FOLDER'], filename)
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File not found'}), 404
+
+    # File size in KB
+    size_kb = os.path.getsize(filepath) // 1024
+
+    # Date modified
+    mod_time = datetime.datetime.fromtimestamp(os.path.getmtime(filepath)).strftime('%Y-%m-%d %H:%M:%S')
+
+    # File type and dimensions
+    ext = os.path.splitext(filename)[1].lower()
+    file_type = 'Image' if ext in ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'] else 'Video'
+
+    dimensions = 'N/A'
+    if file_type == 'Image':
+        try:
+            with Image.open(filepath) as img:
+                dimensions = f"{img.width} x {img.height}"
+        except:
+            pass
+
+    return jsonify({
+        'filename': filename,
+        'size': f"{size_kb} KB",
+        'date': mod_time,
+        'type': file_type,
+        'dimensions': dimensions
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
