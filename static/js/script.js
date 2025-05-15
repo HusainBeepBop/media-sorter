@@ -106,45 +106,51 @@ function scrollToSelectedThumbnail(filename) {
 // === Actions: Delete / Keep / Undo ===
 
 function deleteFile() {
-  if (!currentFile) return showPopup("⚠️ No file selected.", true);
+  if (!currentFile) return;
+  // Remove preview so file is not locked
+  document.getElementById('previewArea').innerHTML = '';
+  
   fetch('/delete', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify({ filename: currentFile })
   })
-    .then(res => {
-      if (res.status === 204) {
-        showPopup("🗑️ File moved to bin");
-        currentFile = "";
-        document.getElementById('previewArea').innerHTML = 'Select a file';
-        resetToolkit();
-        loadMedia();  // Refresh list after delete
-      } else {
-        showPopup("❌ Delete failed.", true);
-      }
-    })
-    .catch(() => showPopup("❌ Error deleting file.", true));
+  .then(res => {
+    if (res.ok) {
+      showPopup("🗑️ File sent to bin");
+      currentFile = "";
+      resetToolkit();
+      loadMedia();
+    } else {
+      showPopup("❌ Failed to delete file", true);
+    }
+  })
+  .catch(() => showPopup("❌ Error deleting file", true));
 }
 
 function markFile() {
-  if (!currentFile) return showPopup("⚠️ No file selected.", true);
+  if (!currentFile) return;
+  // Remove preview so file is not locked
+  document.getElementById('previewArea').innerHTML = '';
+  
   fetch('/mark', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify({ filename: currentFile })
   })
-    .then(res => {
-      if (res.status === 204) {
-        showPopup("✅ File kept");
-        currentFile = "";
-        document.getElementById('previewArea').innerHTML = 'Select a file';
-        resetToolkit();
-        loadMedia();  // Refresh list after keep
-      } else {
-        showPopup("❌ Keep failed.", true);
-      }
-    })
-    .catch(() => showPopup("❌ Error keeping file.", true));
+  .then(res => {
+    if (res.ok) {
+      showPopup("✔️ File marked keep");
+      currentFile = "";
+      resetToolkit();
+      loadMedia();
+    } else {
+      showPopup("❌ Failed to mark file", true);
+    }
+  })
+  .catch(() => showPopup("❌ Error marking file", true));
 }
 
 function undoLastAction() {
