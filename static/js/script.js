@@ -1,4 +1,5 @@
 let currentFile = "";
+let undoAvailable = false;
 
 // === Utility Functions ===
 
@@ -20,6 +21,14 @@ function updateToolkitInfo(filename, size, date, type, dimensions) {
 
 function resetToolkit() {
   updateToolkitInfo('—', '—', '—', '—', '—');
+}
+
+function setUndoButton(enabled) {
+  undoAvailable = enabled;
+  const btn = document.getElementById("undoButton");
+  if (btn) {
+    btn.disabled = !enabled;
+  }
 }
 
 // === Loading and Display ===
@@ -48,6 +57,7 @@ function loadMedia() {
         reel.appendChild(el);
       });
       resetToolkit();
+      setUndoButton(false); // Disable undo on media reload
     })
     .catch(err => console.error("Failed to load media list:", err));
 }
@@ -117,6 +127,7 @@ function deleteFile() {
         document.getElementById('previewArea').innerHTML = 'Select a file';
         resetToolkit();
         loadMedia();
+        setUndoButton(true);  // Enable Undo after delete
       } else {
         showPopup("❌ Delete failed.", true);
       }
@@ -138,11 +149,33 @@ function markFile() {
         document.getElementById('previewArea').innerHTML = 'Select a file';
         resetToolkit();
         loadMedia();
+        setUndoButton(true);  // Enable Undo after mark
       } else {
         showPopup("❌ Keep failed.", true);
       }
     })
     .catch(() => showPopup("❌ Error keeping file.", true));
+}
+
+// === Undo Action ===
+
+function undoAction() {
+  if (!undoAvailable) return;
+  fetch('/undo', { method: 'POST' })
+    .then(res => {
+      if (res.status === 204) {
+        showPopup("↩️ Undo successful");
+        loadMedia();
+        setUndoButton(false);  // Disable Undo after undo
+      } else {
+        res.json().then(data => {
+          showPopup("❌ Undo failed: " + (data.error || ''), true);
+        }).catch(() => {
+          showPopup("❌ Undo failed", true);
+        });
+      }
+    })
+    .catch(() => showPopup("❌ Error performing undo.", true));
 }
 
 window.onload = loadMedia;
