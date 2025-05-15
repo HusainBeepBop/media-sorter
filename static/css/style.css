@@ -148,8 +148,16 @@ header .right {
   padding: 16px;
   font-family: 'Segoe UI', sans-serif;
   z-index: 1000;
-  min-width: 180px;
-  max-width: 280px;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 240px; /* fixed width */
+  height: 180px; /* fixed height */
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.toolkit-field {
+  font-size: 14px;
+  color: #333;
 }
