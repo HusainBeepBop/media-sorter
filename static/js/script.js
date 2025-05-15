@@ -33,6 +33,7 @@ function loadMedia() {
         el.dataset.filename = file;
         reel.appendChild(el);
       });
+      resetToolkit();
     });
 }
 
@@ -61,6 +62,15 @@ function showPreview(file, type) {
     dimensions: 'Loading...'
   });
 
+  fetch(`/metadata/${file}`)
+    .then(res => res.json())
+    .then(data => {
+      updateToolkitInfo(data);
+    })
+    .catch(() => {
+      showPopup("⚠️ Failed to fetch metadata", true);
+    });
+
   const allThumbs = document.getElementById('thumbnailReel').children;
   for (let thumb of allThumbs) {
     if (thumb.dataset.filename === file) {
@@ -81,21 +91,13 @@ function deleteFile() {
       showPopup("🗑️ File moved to bin");
       currentFile = '';
       document.getElementById('previewArea').innerHTML = 'Select a file';
+      resetToolkit();
       loadMedia();
     } else {
       showPopup("❌ Failed to delete file.", true);
     }
   }).catch(() => showPopup("❌ Error deleting file.", true));
 }
-
-function updateToolkitInfo({ filename, size = '—', date = '—', type = '—', dimensions = '—' }) {
-  document.getElementById('tk-filename').textContent = filename || '—';
-  document.getElementById('tk-size').textContent = size;
-  document.getElementById('tk-date').textContent = date;
-  document.getElementById('tk-type').textContent = type;
-  document.getElementById('tk-dimensions').textContent = dimensions;
-}
-
 
 function markFile() {
   if (!currentFile) return showPopup("⚠️ No file selected.", true);
@@ -108,11 +110,30 @@ function markFile() {
       showPopup("✅ File kept");
       currentFile = '';
       document.getElementById('previewArea').innerHTML = 'Select a file';
+      resetToolkit();
       loadMedia();
     } else {
       showPopup("❌ Failed to keep file.", true);
     }
   }).catch(() => showPopup("❌ Error marking file.", true));
+}
+
+function updateToolkitInfo({ filename, size = '—', date = '—', type = '—', dimensions = '—' }) {
+  document.getElementById('tk-filename').textContent = filename || '—';
+  document.getElementById('tk-size').textContent = size;
+  document.getElementById('tk-date').textContent = date;
+  document.getElementById('tk-type').textContent = type;
+  document.getElementById('tk-dimensions').textContent = dimensions;
+}
+
+function resetToolkit() {
+  updateToolkitInfo({
+    filename: '—',
+    size: '—',
+    date: '—',
+    type: '—',
+    dimensions: '—'
+  });
 }
 
 window.onload = loadMedia;
