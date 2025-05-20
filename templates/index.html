@@ -37,6 +37,21 @@
     <div><strong>Dimensions:</strong> <span id="toolkit-dimensions">---</span></div>
   </div>
 
+  <script>
+    document.addEventListener('keydown', function (event) {
+        const key = event.key.toLowerCase();
+
+        if (key === 'd') {
+            document.querySelector('button.delete')?.click();
+        } else if (key === 'k') {
+            document.querySelector('button.keep')?.click();
+        } else if (event.key === 'ArrowDown') {
+            window.scrollBy({ top: 100, behavior: 'smooth' });
+        } else if (event.key === 'ArrowUp') {
+            window.scrollBy({ top: -100, behavior: 'smooth' });
+        }
+    });
+  </script>
 
 
   <script src="/static/js/script.js"></script>
