@@ -17,7 +17,7 @@
 - 🪲 Bug fixes in file handling and preview logic
 
 ## [v1.3.0] - 2025-05-15
-### 🎉 What's New in v1.3.0
+### Added
 
 - 📦 **Fixed-size Preview Box** with clean placeholder layout
 - 📊 **File Info Panel** now shows:
@@ -31,4 +31,10 @@
 - 💅 Polished UI layout and spacing across toolkits
 - 🐛 Minor bug fixes in `delete` and `mark` file operations
 
+## [v2.0.0] - 2025-05-20
+### 🎉 What's New in v2.0.0
+
+* Added keyboard keys support:
+    * `k`: Keep
+    * `d`: Delete
 ---
