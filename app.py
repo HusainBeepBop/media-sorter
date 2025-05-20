@@ -27,11 +27,23 @@ def index():
 
 @app.route('/media-list')
 def media_list():
+    try:
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 100))
+    except ValueError:
+        return jsonify({'error': 'Invalid offset or limit'}), 400
+
     files = []
     for file in os.listdir(media_folder):
         if file.split('.')[-1].lower() in allowed_extensions:
             files.append(file)
-    return jsonify(files)
+    files.sort()  
+
+    paginated_files = files[offset:offset+limit]
+    return jsonify({
+        'files': paginated_files,
+        'total': len(files)
+    })
 
 @app.route('/media/<path:filename>')
 def media_file(filename):
