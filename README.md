@@ -52,10 +52,6 @@ Then open http://127.0.0.1:5000 in your browser.
 
 ### 5. Planned Features:
 
-- Keyboard Shortcuts
-    - D = Delete file
-    - K = Keep file
-    - Up/Down Arrow Keys = Scrolling through the File
 - Undo button
     - Undo your last action (Keep/Delete)
 - Choose Media Folder via UI
