@@ -32,9 +32,14 @@
 - 🐛 Minor bug fixes in `delete` and `mark` file operations
 
 ## [v2.0.0] - 2025-05-20
-### 🎉 What's New in v2.0.0
+### Added
 
 * Added keyboard keys support:
     * `k`: Keep
     * `d`: Delete
+
+## [v2.0.1] - 2025-05-20
+### 🛠️ Bug Fixes and Improvements
+
+* Implemented pagination loading for file listings to address crashes with large folders. Files are now loaded in batches of 25.
 ---
