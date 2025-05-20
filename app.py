@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = 'your_super_secret_key_here'  # Replace with a secure random key for production
 
 # Set custom folders (update these two lines as needed)
-media_folder = os.path.expanduser("~/Downloads/test")
+media_folder = os.path.expanduser("D:/Wallpapers/iSEE")
 bin_folder = os.path.expanduser("~/Downloads/bin")
 
 app.config['MEDIA_FOLDER'] = media_folder
@@ -29,7 +29,7 @@ def index():
 def media_list():
     try:
         offset = int(request.args.get('offset', 0))
-        limit = int(request.args.get('limit', 100))
+        limit = int(request.args.get('limit', 25))
     except ValueError:
         return jsonify({'error': 'Invalid offset or limit'}), 400
 

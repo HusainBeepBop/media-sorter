@@ -1,5 +1,10 @@
 let currentFile = "";
 
+let offset = 0;
+const limit = 25;
+let allLoaded = false;
+let loading = false;
+
 // === Utility Functions ===
 
 function showPopup(message, isError = false) {
@@ -24,12 +29,19 @@ function resetToolkit() {
 
 // === Loading and Display ===
 
-function loadMedia() {
-  fetch('/media-list')
+function loadMedia(initial = false) {
+  if (loading || allLoaded) return;
+  loading = true;
+  fetch(`/media-list?offset=${offset}&limit=${limit}`)
     .then(res => res.json())
-    .then(files => {
+    .then(data => {
+      const files = data.files;
       const reel = document.getElementById('thumbnailReel');
-      reel.innerHTML = '';
+      if (initial) {
+        reel.innerHTML = '';
+        offset = 0;
+        allLoaded = false;
+      }
       files.forEach(file => {
         const ext = file.split('.').pop().toLowerCase();
         let el;
@@ -47,11 +59,21 @@ function loadMedia() {
         el.onclick = () => showPreview(file, el.tagName);
         reel.appendChild(el);
       });
-      resetToolkit();
-      document.getElementById('previewArea').innerHTML = 'Select a file';
-      currentFile = "";
+      offset += files.length;
+      if (offset >= data.total) {
+        allLoaded = true;
+      }
+      if (initial) {
+        resetToolkit();
+        document.getElementById('previewArea').innerHTML = 'Select a file';
+        currentFile = "";
+      }
+      loading = false;
     })
-    .catch(err => console.error("Failed to load media list:", err));
+    .catch(err => {
+      console.error("Failed to load media list:", err);
+      loading = false;
+    });
 }
 
 // === Preview & Metadata ===
@@ -107,9 +129,7 @@ function scrollToSelectedThumbnail(filename) {
 
 function deleteFile() {
   if (!currentFile) return;
-  // Remove preview so file is not locked
   document.getElementById('previewArea').innerHTML = '';
-  
   fetch('/delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -121,7 +141,9 @@ function deleteFile() {
       showPopup("🗑️ File sent to bin");
       currentFile = "";
       resetToolkit();
-      loadMedia();
+      offset = 0;
+      allLoaded = false;
+      loadMedia(true);
     } else {
       showPopup("❌ Failed to delete file", true);
     }
@@ -131,9 +153,7 @@ function deleteFile() {
 
 function markFile() {
   if (!currentFile) return;
-  // Remove preview so file is not locked
   document.getElementById('previewArea').innerHTML = '';
-  
   fetch('/mark', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -145,7 +165,9 @@ function markFile() {
       showPopup("✔️ File marked keep");
       currentFile = "";
       resetToolkit();
-      loadMedia();
+      offset = 0;
+      allLoaded = false;
+      loadMedia(true);
     } else {
       showPopup("❌ Failed to mark file", true);
     }
@@ -163,7 +185,9 @@ function undoLastAction() {
         currentFile = "";
         document.getElementById('previewArea').innerHTML = 'Select a file';
         resetToolkit();
-        loadMedia();  // Refresh list after undo
+        offset = 0;
+        allLoaded = false;
+        loadMedia(true);
       } else {
         res.json().then(data => {
           showPopup(`❌ Undo failed: ${data.error}`, true);
@@ -173,4 +197,12 @@ function undoLastAction() {
     .catch(() => showPopup("❌ Error performing undo.", true));
 }
 
-window.onload = loadMedia;
+document.addEventListener('DOMContentLoaded', () => {
+  loadMedia(true);
+  const reel = document.getElementById('thumbnailReel');
+  reel.addEventListener('scroll', function() {
+    if (reel.scrollTop + reel.clientHeight >= reel.scrollHeight - 50) {
+      loadMedia();
+    }
+  });
+});
