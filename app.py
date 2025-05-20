@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = 'your_super_secret_key_here'  # Replace with a secure random key for production
 
 # Set custom folders (update these two lines as needed)
-media_folder = os.path.expanduser("D:/Wallpapers/iSEE")
+media_folder = os.path.expanduser("D:/Photos")
 bin_folder = os.path.expanduser("~/Downloads/bin")
 
 app.config['MEDIA_FOLDER'] = media_folder
